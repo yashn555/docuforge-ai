@@ -308,17 +308,26 @@ This project is open-source and available under the [MIT License](LICENSE).
 
 ## 📊 Project Statistics
 
-[![GitHub stars](https://img.shields.io/github/stars/yashn555/docuforge-ai)](https://github.com/yashn555/docuforge-ai/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/yashn555/docuforge-ai)](https://github.com/yashn555/docuforge-ai/network)
-[![GitHub issues](https://img.shields.io/github/issues/yashn555/docuforge-ai)](https://github.com/yashn555/docuforge-ai/issues)
-[![GitHub pull requests](https://img.shields.io/github/issues-pr/yashn555/docuforge-ai)](https://github.com/yashn555/docuforge-ai/pulls)
+<p align="center">
+  <a href="https://github.com/yashn555/docuforge-ai/stargazers">
+    <img src="https://img.shields.io/github/stars/yashn555/docuforge-ai?style=for-the-badge&logo=github&color=yellow" alt="GitHub Stars">
+  </a>
+
+  <a href="https://github.com/yashn555/docuforge-ai/network/members">
+    <img src="https://img.shields.io/github/forks/yashn555/docuforge-ai?style=for-the-badge&logo=github&color=blue" alt="GitHub Forks">
+  </a>
+
+  <a href="https://github.com/yashn555/docuforge-ai/issues">
+    <img src="https://img.shields.io/github/issues/yashn555/docuforge-ai?style=for-the-badge&logo=github&color=red" alt="GitHub Issues">
+  </a>
+
+  <a href="https://github.com/yashn555/docuforge-ai/pulls">
+    <img src="https://img.shields.io/github/issues-pr/yashn555/docuforge-ai?style=for-the-badge&logo=github&color=green" alt="GitHub Pull Requests">
+  </a>
+</p>
 
 ---
 
 **Made with ❤️ for students and professionals worldwide**
 
 
-
----
-
-**DocuForge AI - Making Document Generation Simple** 🚀
