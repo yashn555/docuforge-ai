@@ -13,7 +13,8 @@ import {
   FiCode,
   FiTarget,
   FiLayers,
-  FiClipboard
+  FiClipboard,
+  FiChevronRight
 } from 'react-icons/fi';
 
 interface SectionData {
@@ -136,7 +137,6 @@ export const Setup: React.FC = () => {
   const handleNavigation = useCallback((result: GenerationResult) => {
     setIsNavigating(true);
     try {
-      // Validate result before navigation
       if (!result || !result.sections) {
         throw new Error('Invalid generation result');
       }
@@ -156,6 +156,29 @@ export const Setup: React.FC = () => {
     }
   }, [navigate, formData]);
 
+  const handleContinueToSections = () => {
+    // Save form data
+    localStorage.setItem('setupFormData', JSON.stringify(formData));
+    
+    // Create serializable sections (without React elements)
+    const serializableSections = sections.map(s => ({
+      title: s.title,
+      key: s.key,
+      generated: s.generated,
+      content: s.content || ''
+    }));
+    
+    // Store sections in localStorage for the SectionSelection page
+    localStorage.setItem('sectionsData', JSON.stringify(serializableSections));
+    
+    // Navigate to section selection with only serializable data
+    navigate('/sections', { 
+      state: { 
+        formData: formData
+      } 
+    });
+  };
+
   const handleGenerate = async () => {
     setIsGenerating(true);
     setGenerationError(null);
@@ -173,7 +196,6 @@ export const Setup: React.FC = () => {
         { progress: 95, message: 'Finalizing document...' },
       ];
 
-      // Simulate progress updates
       let stepIndex = 0;
       const progressInterval = setInterval(() => {
         if (stepIndex < steps.length) {
@@ -217,7 +239,6 @@ export const Setup: React.FC = () => {
         setCurrentStep('✅ Generation complete!');
         setIsGenerated(true);
         
-        // Update section status
         sections.forEach(section => {
           if (data.result.sections[section.key]) {
             section.generated = true;
@@ -225,11 +246,9 @@ export const Setup: React.FC = () => {
           }
         });
 
-        // Store result in session
         localStorage.setItem('generationResult', JSON.stringify(data.result));
         localStorage.setItem('formData', JSON.stringify(formData));
         
-        // Navigate to preview with a slight delay for smooth UX
         setTimeout(() => {
           handleNavigation(data.result);
         }, 1500);
@@ -260,7 +279,6 @@ export const Setup: React.FC = () => {
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Generating Your Document</h2>
               <p className="text-gray-500 mb-6">{currentStep}</p>
               
-              {/* Progress Bar */}
               <div className="w-full max-w-md mx-auto">
                 <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
                   <div
@@ -271,7 +289,6 @@ export const Setup: React.FC = () => {
                 <p className="text-sm text-gray-500 mt-2">{generationProgress}% complete</p>
               </div>
 
-              {/* Section Status */}
               <div className="mt-8 grid grid-cols-2 gap-3 max-w-md mx-auto">
                 {sections.map((section, index) => (
                   <div 
@@ -292,7 +309,6 @@ export const Setup: React.FC = () => {
                 ))}
               </div>
 
-              {/* AI Status */}
               <div className="mt-6 text-sm">
                 {aiStatus.available ? (
                   <span className="text-green-600 flex items-center justify-center">
@@ -343,7 +359,6 @@ export const Setup: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="container mx-auto max-w-5xl">
-        {/* Back button */}
         <button
           onClick={() => navigate('/dashboard')}
           className="flex items-center text-gray-600 hover:text-blue-600 transition-colors mb-6"
@@ -353,7 +368,6 @@ export const Setup: React.FC = () => {
         </button>
 
         <div className="bg-white rounded-2xl shadow-xl p-8">
-          {/* Header */}
           <div className="flex items-center justify-between mb-8 pb-6 border-b border-gray-200">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Document Setup</h1>
@@ -386,7 +400,6 @@ export const Setup: React.FC = () => {
           )}
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Left Column - Personal Information */}
             <div className="space-y-5">
               <div className="flex items-center space-x-2 mb-2">
                 <FiUser className="w-5 h-5 text-blue-600" />
@@ -400,7 +413,7 @@ export const Setup: React.FC = () => {
                   name="title"
                   value={formData.title}
                   onChange={handleInputChange}
-                  className="input-field"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                   placeholder="e.g., Final Year Project Report"
                   required
                 />
@@ -413,7 +426,7 @@ export const Setup: React.FC = () => {
                   name="studentName"
                   value={formData.studentName}
                   onChange={handleInputChange}
-                  className="input-field"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                   placeholder="Enter full name"
                   required
                 />
@@ -426,7 +439,7 @@ export const Setup: React.FC = () => {
                   name="teacherName"
                   value={formData.teacherName}
                   onChange={handleInputChange}
-                  className="input-field"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                   placeholder="Enter guide name"
                 />
               </div>
@@ -438,7 +451,7 @@ export const Setup: React.FC = () => {
                   name="collegeName"
                   value={formData.collegeName}
                   onChange={handleInputChange}
-                  className="input-field"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                   placeholder="Enter college/institute name"
                   required
                 />
@@ -452,7 +465,7 @@ export const Setup: React.FC = () => {
                     name="department"
                     value={formData.department}
                     onChange={handleInputChange}
-                    className="input-field"
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                     placeholder="e.g., Computer Science"
                   />
                 </div>
@@ -463,14 +476,13 @@ export const Setup: React.FC = () => {
                     name="academicYear"
                     value={formData.academicYear}
                     onChange={handleInputChange}
-                    className="input-field"
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                     placeholder="e.g., 2024-2025"
                   />
                 </div>
               </div>
             </div>
 
-            {/* Right Column - Content Details */}
             <div className="space-y-5">
               <div className="flex items-center space-x-2 mb-2">
                 <FiFileText className="w-5 h-5 text-indigo-600" />
@@ -483,7 +495,7 @@ export const Setup: React.FC = () => {
                   name="abstractPoints"
                   value={formData.abstractPoints}
                   onChange={handleInputChange}
-                  className="input-field"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-y"
                   rows={2}
                   placeholder="Brief description of what your work is about..."
                 />
@@ -495,7 +507,7 @@ export const Setup: React.FC = () => {
                   name="objectives"
                   value={formData.objectives}
                   onChange={handleInputChange}
-                  className="input-field"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-y"
                   rows={2}
                   placeholder="List your main objectives..."
                 />
@@ -507,7 +519,7 @@ export const Setup: React.FC = () => {
                   name="problemStatement"
                   value={formData.problemStatement}
                   onChange={handleInputChange}
-                  className="input-field"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-y"
                   rows={2}
                   placeholder="What problem are you addressing?"
                 />
@@ -520,7 +532,7 @@ export const Setup: React.FC = () => {
                   name="technologies"
                   value={formData.technologies}
                   onChange={handleInputChange}
-                  className="input-field"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                   placeholder="e.g., React, Node.js, MongoDB"
                 />
               </div>
@@ -531,7 +543,7 @@ export const Setup: React.FC = () => {
                   name="methodology"
                   value={formData.methodology}
                   onChange={handleInputChange}
-                  className="input-field"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-y"
                   rows={2}
                   placeholder="Describe your research methodology..."
                 />
@@ -539,7 +551,6 @@ export const Setup: React.FC = () => {
             </div>
           </div>
 
-          {/* Sections to Generate */}
           <div className="mt-8 pt-6 border-t border-gray-200">
             <div className="flex items-center space-x-2 mb-4">
               <FiCode className="w-5 h-5 text-purple-600" />
@@ -569,18 +580,17 @@ export const Setup: React.FC = () => {
             </p>
           </div>
 
-          {/* Generate Button */}
           <div className="mt-8 pt-6 border-t border-gray-200 flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <button
-                className="btn-primary flex items-center px-8 py-3"
-                onClick={handleGenerate}
-                disabled={isGenerating || !formData.title || !formData.studentName || !formData.collegeName}
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-3 rounded-lg font-medium transition-all duration-200 flex items-center shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={handleContinueToSections}
+                disabled={!formData.title || !formData.studentName || !formData.collegeName}
               >
-                <FiSend className="mr-2" />
-                Generate Document
+                <FiChevronRight className="mr-2" />
+                Continue to Section Selection →
               </button>
-              {(isGenerating || !formData.title || !formData.studentName || !formData.collegeName) && (
+              {( !formData.title || !formData.studentName || !formData.collegeName) && (
                 <span className="text-sm text-gray-400">
                   {!formData.title ? 'Title required' : 
                    !formData.studentName ? 'Name required' : 

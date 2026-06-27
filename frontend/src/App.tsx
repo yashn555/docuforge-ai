@@ -3,12 +3,14 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Home } from './pages/Home';
 import { Dashboard } from './pages/Dashboard';
 import { Setup } from './pages/Setup';
-import { Preview } from './pages/Preview'; // NEW
+import { SectionSelection } from './pages/SectionSelection';
+import { Generate } from './pages/Generate';
+import { Preview } from './pages/Preview';
 import { Header } from './components/Layout/Header';
 import { Footer } from './components/Layout/Footer';
 
 function App() {
-  console.log('App rendering...');
+  console.log('🚀 App rendering...');
   return (
     <Router>
       <div className="min-h-screen flex flex-col bg-gray-50">
@@ -18,8 +20,9 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/setup" element={<Setup />} />
-            <Route path="/preview" element={<Preview />} /> {/* NEW */}
-            {/* Catch-all for debugging */}
+            <Route path="/sections" element={<SectionSelection />} />
+            <Route path="/generate" element={<Generate />} />
+            <Route path="/preview" element={<Preview />} />
             <Route path="*" element={
               <div className="min-h-screen flex items-center justify-center bg-gray-50">
                 <div className="text-center">

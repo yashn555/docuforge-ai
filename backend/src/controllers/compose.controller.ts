@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import fs from 'fs';
+import path from 'path';
 import sessionService from '../services/session.service.js';
 import DocxComposer from '../services/composition-engine/docx-composer.js';
 import chalk from 'chalk';
@@ -10,15 +11,19 @@ export class ComposeController {
     
     try {
       const sessionId = (req as any).sessionId;
+      console.log(chalk.gray(`[COMPOSE] Session ID: ${sessionId}`));
+      
       const session = sessionService.getSession(sessionId);
       
       if (!session) {
+        console.log(chalk.red('[COMPOSE] Session not found'));
         return res.status(404).json({ 
           error: 'Session not found' 
         });
       }
 
       if (!session.templateFile) {
+        console.log(chalk.red('[COMPOSE] No template file found'));
         return res.status(404).json({ 
           error: 'No template found. Please upload a template first.' 
         });
@@ -27,6 +32,7 @@ export class ComposeController {
       const generatedDoc = session.generatedDocument;
 
       if (!generatedDoc || !generatedDoc.sections) {
+        console.log(chalk.red('[COMPOSE] No generated content found'));
         return res.status(404).json({
           error: 'No generated content found. Please generate the document first.'
         });
@@ -83,9 +89,12 @@ export class ComposeController {
     
     try {
       const sessionId = (req as any).sessionId;
+      console.log(chalk.gray(`[COMPOSE] Session ID: ${sessionId}`));
+      
       const session = sessionService.getSession(sessionId);
       
       if (!session || !session.composedFile) {
+        console.log(chalk.red('[COMPOSE] No composed file found'));
         return res.status(404).json({
           error: 'No composed file found. Please compose the document first.'
         });
@@ -95,23 +104,22 @@ export class ComposeController {
 
       // Check if file exists
       if (!fs.existsSync(filePath)) {
+        console.log(chalk.red(`[COMPOSE] File not found: ${filePath}`));
         return res.status(404).json({
           error: 'Composed file not found on server.'
         });
       }
 
       console.log(chalk.green(`[COMPOSE] Downloading: ${fileName}`));
+      console.log(chalk.gray(`[COMPOSE] File path: ${filePath}`));
       
-      res.download(filePath, fileName, (err) => {
-        if (err) {
-          console.error(chalk.red('[COMPOSE] Download error:'), err);
-          if (!res.headersSent) {
-            res.status(500).json({ error: 'Failed to download file' });
-          }
-        } else {
-          console.log(chalk.green(`[COMPOSE] Download complete: ${fileName}`));
-        }
-      });
+      // Set headers for download
+      res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+      
+      // Stream the file
+      const fileStream = fs.createReadStream(filePath);
+      fileStream.pipe(res);
 
     } catch (error) {
       console.error(chalk.red('[COMPOSE] Download error:'), error);
@@ -152,4 +160,5 @@ export class ComposeController {
   }
 }
 
+// Export as default
 export default new ComposeController();

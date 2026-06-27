@@ -12,4 +12,9 @@ router.get('/download', composeController.downloadComposed.bind(composeControlle
 // GET /api/compose/status - Get composition status
 router.get('/status', composeController.getCompositionStatus.bind(composeController));
 
+// Test route
+router.get('/test', (req, res) => {
+  res.json({ message: 'Compose routes are working!' });
+});
+
 export default router;

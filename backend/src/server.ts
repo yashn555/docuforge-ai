@@ -46,12 +46,14 @@ app.use((req, res, next) => {
   next();
 });
 
-// Routes
+// Routes - Register all routes
+console.log(chalk.yellow('\n📋 Registering routes...'));
 app.use('/api/upload', uploadRoutes);
 app.use('/api/session', sessionRoutes);
 app.use('/api/parse', parseRoutes);
 app.use('/api/generate', generateRoutes);
 app.use('/api/compose', composeRoutes);
+console.log(chalk.green('✅ All routes registered'));
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -60,6 +62,11 @@ app.get('/api/health', (req, res) => {
     timestamp: new Date().toISOString(),
     sessionId: (req as any).sessionId
   });
+});
+
+// Test compose route
+app.get('/api/compose-test', (req, res) => {
+  res.json({ message: 'Compose test route is working!' });
 });
 
 // Error handling middleware
@@ -86,9 +93,10 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 });
 
 app.listen(PORT, () => {
-  console.log(chalk.blue(`🚀 Server running on http://localhost:${PORT}`));
+  console.log(chalk.blue(`\n🚀 Server running on http://localhost:${PORT}`));
   console.log(chalk.green(`📁 Upload directory: ${join(__dirname, '../uploads/temp')}`));
-  console.log(chalk.yellow(`📋 Routes:`));
+  console.log(chalk.green(`📁 Composed directory: ${join(__dirname, '../uploads/composed')}`));
+  console.log(chalk.yellow(`\n📋 Available Routes:`));
   console.log(chalk.gray(`  POST /api/upload/template`));
   console.log(chalk.gray(`  GET  /api/upload/status`));
   console.log(chalk.gray(`  POST /api/parse/template`));
@@ -98,6 +106,8 @@ app.listen(PORT, () => {
   console.log(chalk.gray(`  GET  /api/generate/status`));
   console.log(chalk.gray(`  POST /api/compose/document`));
   console.log(chalk.gray(`  GET  /api/compose/download`));
+  console.log(chalk.gray(`  GET  /api/compose/status`));
   console.log(chalk.gray(`  GET  /api/session/info`));
   console.log(chalk.gray(`  GET  /api/health`));
+  console.log(chalk.gray(`  GET  /api/compose-test\n`));
 });
