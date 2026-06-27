@@ -1,0 +1,43 @@
+services:
+  # Backend API Service
+  - type: web
+    name: docuforge-backend
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: cd backend && npm install && npm run build
+    startCommand: cd backend && npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: OLLAMA_HOST
+        value: http://localhost:11434
+      - key: AI_MODEL
+        value: tinyllama:latest
+      - key: AI_TIMEOUT
+        value: 90000
+      - key: SESSION_TTL
+        value: 3600
+      - key: MAX_FILE_SIZE
+        value: 10485760
+      - key: UPLOAD_DIR
+        value: ./uploads/temp
+    healthCheckPath: /api/health
+
+  # Frontend Static Service
+  - type: web
+    name: docuforge-frontend
+    runtime: static
+    plan: free
+    region: oregon
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://docuforge-backend.onrender.com/api
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

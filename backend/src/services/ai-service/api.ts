@@ -1,5 +1,6 @@
 // Get API URL from environment
-const API_URL = (import.meta as any).env.VITE_API_URL || 'http://localhost:5000';
+// Cast import.meta to any to avoid TypeScript error when ImportMeta types are not declared
+const API_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000';
 
 export const api = {
   upload: `${API_URL}/api/upload`,
