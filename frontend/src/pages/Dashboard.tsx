@@ -338,7 +338,7 @@ export const Dashboard: React.FC = () => {
                   setParseComplete(false);
                   parseTemplate();
                 }}
-                className="btn-primary"
+                className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
               >
                 Try Again
               </button>
@@ -367,7 +367,7 @@ export const Dashboard: React.FC = () => {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <p className="text-gray-600">No template found</p>
-          <button onClick={() => navigate('/')} className="mt-4 btn-primary">
+          <button onClick={() => navigate('/')} className="mt-4 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors">
             Upload a Template
           </button>
         </div>
@@ -557,7 +557,7 @@ export const Dashboard: React.FC = () => {
           </div>
         )}
 
-        {/* Next Steps */}
+        {/* Next Steps - Updated Section */}
         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 border border-blue-100">
           <h2 className="text-xl font-semibold text-gray-900 mb-2">
             🚀 Ready for AI Generation
@@ -566,17 +566,24 @@ export const Dashboard: React.FC = () => {
             Your template has been parsed successfully. Next, we'll collect the information 
             needed to generate your document with AI.
           </p>
-          <button 
-            className="btn-primary"
-            onClick={() => {
-              // For now, show a message since Phase 3 isn't ready
-              alert('📝 Phase 3: AI Service Integration coming soon!\n\nYour template has been parsed successfully. In the next phase, we\'ll collect document details and generate AI content.');
-            }}
-          >
-            Continue to Document Setup →
-          </button>
+          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+            <button 
+              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl flex items-center"
+              onClick={() => {
+                console.log('🔄 Navigate to Setup clicked');
+                navigate('/setup');
+              }}
+            >
+              Continue to Document Setup →
+            </button>
+            <span className="text-sm text-gray-500">
+              This will take you to the document setup page
+            </span>
+          </div>
         </div>
       </div>
     </div>
   );
 };
+
+export default Dashboard;
