@@ -5,8 +5,8 @@ services:
     runtime: node
     plan: free
     region: oregon
-    buildCommand: cd backend && npm install && npm run build
-    startCommand: cd backend && npm run start
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && node dist/server.js
     envVars:
       - key: NODE_ENV
         value: production
@@ -24,19 +24,23 @@ services:
         value: 10485760
       - key: UPLOAD_DIR
         value: ./uploads/temp
+      - key: RENDER
+        value: true
+      - key: IS_RENDER
+        value: true
     healthCheckPath: /api/health
 
-  # Frontend Static Service - NO region field
-  - type: web
+  # Frontend Static Service
+  - type: static
     name: docuforge-frontend
-    runtime: static
     plan: free
-    # region: oregon  ← REMOVE THIS LINE - Static sites don't need region
     buildCommand: cd frontend && npm install && npm run build
     staticPublishPath: frontend/dist
     envVars:
       - key: VITE_API_URL
         value: https://docuforge-backend.onrender.com/api
+      - key: RENDER
+        value: true
     routes:
       - type: rewrite
         source: /*

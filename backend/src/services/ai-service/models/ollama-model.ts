@@ -3,6 +3,10 @@ import { AIModel, AIGenerateOptions, AIGenerateResponse } from './ai-model.inter
 import chalk from 'chalk';
 import { Readable } from 'stream';
 
+// Check if running on Render
+const isRender = process.env.RENDER === 'true' || process.env.IS_RENDER === 'true';
+const isProduction = process.env.NODE_ENV === 'production';
+
 export class OllamaModel implements AIModel {
   name: string;
   provider: string = 'ollama';
@@ -21,9 +25,22 @@ export class OllamaModel implements AIModel {
     this.baseUrl = baseUrl;
     this.timeout = timeout;
     this.streamingEnabled = streamingEnabled;
+    
+    // If on Render, mark as unavailable
+    if (isRender || isProduction) {
+      console.log(chalk.yellow(`⚠️ Ollama model "${this.name}" - Running on Render/Production, AI will use fallback`));
+      this.isAvailable = false;
+    }
   }
 
   async checkAvailability(): Promise<boolean> {
+    // If on Render or production, skip availability check
+    if (isRender || isProduction) {
+      console.log(chalk.gray(`ℹ️ Skipping Ollama check on Render/Production`));
+      this.isAvailable = false;
+      return false;
+    }
+
     try {
       const response = await axios.get(`${this.baseUrl}/api/tags`, {
         timeout: 5000
@@ -72,6 +89,19 @@ export class OllamaModel implements AIModel {
   async generate(prompt: string, options?: AIGenerateOptions): Promise<AIGenerateResponse> {
     const startTime = Date.now();
     
+    // If running on Render or production, return fallback immediately
+    if (isRender || isProduction) {
+      console.log(chalk.yellow(`ℹ️ Ollama "${this.name}" - Using fallback (Render/Production mode)`));
+      return {
+        text: '',
+        model: this.name,
+        success: false,
+        error: 'Ollama not available on Render. Using fallback.',
+        processingTime: 0
+      };
+    }
+
+    // If Ollama is marked as unavailable, try to check again
     if (!this.isAvailable) {
       await this.checkAvailability();
       if (!this.isAvailable) {
@@ -79,7 +109,8 @@ export class OllamaModel implements AIModel {
           text: '',
           model: this.name,
           success: false,
-          error: `Ollama model "${this.name}" is not available`
+          error: `Ollama model "${this.name}" is not available`,
+          processingTime: Date.now() - startTime
         };
       }
     }
@@ -87,7 +118,7 @@ export class OllamaModel implements AIModel {
     try {
       console.log(chalk.gray(`🤖 Generating with ${this.name}...`));
       
-      // Reduce prompt length for tinyllama
+      // Reduce prompt length for tiny models
       let shortPrompt = prompt;
       if (prompt.length > 800) {
         shortPrompt = prompt.slice(0, 800) + '\n\n[Generate concise content]';
@@ -131,7 +162,8 @@ export class OllamaModel implements AIModel {
             text: '',
             model: this.name,
             success: false,
-            error: 'Response too short or empty'
+            error: 'Response too short or empty',
+            processingTime: processingTime
           };
         }
       } else {
@@ -139,7 +171,8 @@ export class OllamaModel implements AIModel {
           text: '',
           model: this.name,
           success: false,
-          error: 'No response from Ollama'
+          error: 'No response from Ollama',
+          processingTime: processingTime
         };
       }
     } catch (error: any) {
@@ -188,12 +221,19 @@ export class OllamaModel implements AIModel {
         text: '',
         model: this.name,
         success: false,
-        error: error.message || 'Generation failed'
+        error: error.message || 'Generation failed',
+        processingTime: Date.now() - startTime
       };
     }
   }
 
   async pullModel(): Promise<boolean> {
+    // Skip pulling on Render
+    if (isRender || isProduction) {
+      console.log(chalk.yellow(`ℹ️ Skipping model pull on Render/Production`));
+      return false;
+    }
+
     try {
       console.log(chalk.yellow(`📥 Pulling model "${this.name}"...`));
       const response = await axios.post(
@@ -212,6 +252,24 @@ export class OllamaModel implements AIModel {
       console.error(chalk.red(`❌ Failed to pull model:`), error);
       return false;
     }
+  }
+
+  // Get model status
+  async getStatus(): Promise<{ available: boolean; name: string; isRender: boolean }> {
+    if (isRender || isProduction) {
+      return {
+        available: false,
+        name: this.name,
+        isRender: true
+      };
+    }
+    
+    const available = await this.checkAvailability();
+    return {
+      available,
+      name: this.name,
+      isRender: false
+    };
   }
 }
 
