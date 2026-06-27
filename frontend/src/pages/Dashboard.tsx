@@ -11,7 +11,11 @@ import {
   FiLayers,
   FiGrid,
   FiHash,
-  FiInfo
+  FiInfo,
+  FiClock,
+  FiTrendingUp,
+  FiShield,
+  FiZap
 } from 'react-icons/fi';
 import { ParseProgress, ParseProgressData } from '../components/Common/ParseProgress';
 
@@ -273,29 +277,29 @@ export const Dashboard: React.FC = () => {
     }
   };
 
-  // Show parsing progress (this shows the progress bar)
+  // Show parsing progress
   if (isParsing) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6">
+      <div className="min-h-screen bg-gray-50 p-4 md:p-6">
         <div className="container mx-auto max-w-4xl">
-          <div className="mb-6">
+          <div className="mb-4 md:mb-6">
             <button
               onClick={() => navigate('/')}
-              className="flex items-center text-gray-600 hover:text-blue-600 transition-colors"
+              className="flex items-center text-gray-600 hover:text-blue-600 transition-colors text-sm md:text-base"
             >
               <FiArrowLeft className="mr-2" />
               Back to Home
             </button>
           </div>
           
-          <div className="bg-white rounded-2xl shadow-sm p-8 mb-6">
+          <div className="bg-white rounded-2xl shadow-sm p-6 md:p-8 mb-6">
             <div className="flex items-center mb-6">
               <FiCpu className="w-6 h-6 text-blue-600 mr-3 animate-pulse" />
               <div>
                 <h1 className="text-xl font-bold text-gray-900">
                   Analyzing Your Template
                 </h1>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-500 truncate max-w-[200px] md:max-w-none">
                   {uploadData?.file?.name || 'Processing...'}
                 </p>
               </div>
@@ -315,19 +319,19 @@ export const Dashboard: React.FC = () => {
   // Show error
   if (parseError) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6">
+      <div className="min-h-screen bg-gray-50 p-4 md:p-6">
         <div className="container mx-auto max-w-4xl">
-          <div className="mb-6">
+          <div className="mb-4 md:mb-6">
             <button
               onClick={() => navigate('/')}
-              className="flex items-center text-gray-600 hover:text-blue-600 transition-colors"
+              className="flex items-center text-gray-600 hover:text-blue-600 transition-colors text-sm md:text-base"
             >
               <FiArrowLeft className="mr-2" />
               Back to Home
             </button>
           </div>
           
-          <div className="bg-white rounded-2xl shadow-sm p-8">
+          <div className="bg-white rounded-2xl shadow-sm p-6 md:p-8">
             <div className="text-center">
               <FiAlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Parsing Failed</h2>
@@ -349,7 +353,7 @@ export const Dashboard: React.FC = () => {
     );
   }
 
-  // If parsing is complete but no summary yet (shouldn't happen, but safety check)
+  // If parsing is complete but no summary yet
   if (parseComplete && !summary) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -364,7 +368,7 @@ export const Dashboard: React.FC = () => {
   // Show template analysis result
   if (!summary && !uploadData) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
         <div className="text-center">
           <p className="text-gray-600">No template found</p>
           <button onClick={() => navigate('/')} className="mt-4 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors">
@@ -375,86 +379,84 @@ export const Dashboard: React.FC = () => {
     );
   }
 
-  // MAIN VIEW - Template Analysis Complete (No loading spinner here)
+  // MAIN VIEW - Template Analysis Complete
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 p-4 md:p-6">
       <div className="container mx-auto max-w-4xl">
         {/* Back button */}
         <button
           onClick={() => navigate('/')}
-          className="flex items-center text-gray-600 hover:text-blue-600 transition-colors mb-6"
+          className="flex items-center text-gray-600 hover:text-blue-600 transition-colors mb-4 md:mb-6 text-sm md:text-base"
         >
           <FiArrowLeft className="mr-2" />
           Back to Home
         </button>
 
         {/* Header */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
-          <div className="flex items-center justify-between">
+        <div className="bg-white rounded-2xl shadow-sm p-4 md:p-6 mb-4 md:mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">
+              <h1 className="text-xl md:text-2xl font-bold text-gray-900">
                 Template Analysis Complete
               </h1>
               <p className="text-gray-500 text-sm mt-1">
                 We've analyzed your template structure and formatting
               </p>
             </div>
-            <div className="flex items-center space-x-2">
-              <FiCheckCircle className="w-5 h-5 text-green-500" />
+            <div className="flex items-center space-x-2 self-start sm:self-auto">
+              <FiCheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
               <span className="text-sm text-green-600 font-medium">Analyzed</span>
             </div>
           </div>
         </div>
 
-        {/* Summary Cards */}
+        {/* Summary Cards - Mobile Responsive */}
         {summary && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div className="bg-white rounded-xl shadow-sm p-4 hover:shadow-md transition-shadow">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-4 md:mb-6">
+            <div className="bg-white rounded-xl shadow-sm p-3 md:p-4 hover:shadow-md transition-shadow">
               <div className="flex items-center">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <FiBookOpen className="w-5 h-5 text-blue-600" />
+                <div className="p-1.5 md:p-2 bg-blue-100 rounded-lg flex-shrink-0">
+                  <FiBookOpen className="w-4 h-4 md:w-5 md:h-5 text-blue-600" />
                 </div>
-                <div className="ml-3">
-                  <p className="text-xs text-gray-500">Document Type</p>
-                  <p className="font-semibold text-gray-900 text-sm">{summary.documentTypeLabel}</p>
+                <div className="ml-2 md:ml-3 min-w-0">
+                  <p className="text-[10px] md:text-xs text-gray-500 truncate">Document Type</p>
+                  <p className="font-semibold text-gray-900 text-xs md:text-sm truncate">{summary.documentTypeLabel}</p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm p-4 hover:shadow-md transition-shadow">
+            <div className="bg-white rounded-xl shadow-sm p-3 md:p-4 hover:shadow-md transition-shadow">
               <div className="flex items-center">
-                <div className="p-2 bg-green-100 rounded-lg">
-                  <FiLayers className="w-5 h-5 text-green-600" />
+                <div className="p-1.5 md:p-2 bg-green-100 rounded-lg flex-shrink-0">
+                  <FiLayers className="w-4 h-4 md:w-5 md:h-5 text-green-600" />
                 </div>
-                <div className="ml-3">
-                  <p className="text-xs text-gray-500">Sections</p>
-                  <p className="font-semibold text-gray-900">{summary.sectionCount}</p>
+                <div className="ml-2 md:ml-3">
+                  <p className="text-[10px] md:text-xs text-gray-500">Sections</p>
+                  <p className="font-semibold text-gray-900 text-xs md:text-sm">{summary.sectionCount}</p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm p-4 hover:shadow-md transition-shadow">
+            <div className="bg-white rounded-xl shadow-sm p-3 md:p-4 hover:shadow-md transition-shadow">
               <div className="flex items-center">
-                <div className="p-2 bg-purple-100 rounded-lg">
-                  <FiHash className="w-5 h-5 text-purple-600" />
+                <div className="p-1.5 md:p-2 bg-purple-100 rounded-lg flex-shrink-0">
+                  <FiHash className="w-4 h-4 md:w-5 md:h-5 text-purple-600" />
                 </div>
-                <div className="ml-3">
-                  <p className="text-xs text-gray-500">Placeholders</p>
-                  <p className="font-semibold text-gray-900">
-                    {summary.placeholderCount || 0}
-                  </p>
+                <div className="ml-2 md:ml-3">
+                  <p className="text-[10px] md:text-xs text-gray-500">Placeholders</p>
+                  <p className="font-semibold text-gray-900 text-xs md:text-sm">{summary.placeholderCount || 0}</p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm p-4 hover:shadow-md transition-shadow">
+            <div className="bg-white rounded-xl shadow-sm p-3 md:p-4 hover:shadow-md transition-shadow">
               <div className="flex items-center">
-                <div className="p-2 bg-yellow-100 rounded-lg">
-                  <FiGrid className="w-5 h-5 text-yellow-600" />
+                <div className="p-1.5 md:p-2 bg-yellow-100 rounded-lg flex-shrink-0">
+                  <FiGrid className="w-4 h-4 md:w-5 md:h-5 text-yellow-600" />
                 </div>
-                <div className="ml-3">
-                  <p className="text-xs text-gray-500">Confidence</p>
-                  <p className="font-semibold text-gray-900">
+                <div className="ml-2 md:ml-3">
+                  <p className="text-[10px] md:text-xs text-gray-500">Confidence</p>
+                  <p className="font-semibold text-gray-900 text-xs md:text-sm">
                     {(summary.confidence * 100).toFixed(0)}%
                   </p>
                 </div>
@@ -465,54 +467,54 @@ export const Dashboard: React.FC = () => {
 
         {/* File Info */}
         {uploadData && (
-          <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
+          <div className="bg-white rounded-2xl shadow-sm p-4 md:p-6 mb-4 md:mb-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">
               Uploaded File
             </h2>
-            <div className="flex items-center p-4 bg-gray-50 rounded-xl">
-              <FiFile className="w-8 h-8 text-blue-600 mr-4" />
-              <div className="flex-1">
-                <p className="font-medium text-gray-900">{uploadData.file?.name || 'Unknown'}</p>
-                <p className="text-sm text-gray-500">
+            <div className="flex items-center p-3 md:p-4 bg-gray-50 rounded-xl">
+              <FiFile className="w-6 h-6 md:w-8 md:h-8 text-blue-600 mr-3 md:mr-4 flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="font-medium text-gray-900 text-sm md:text-base truncate">{uploadData.file?.name || 'Unknown'}</p>
+                <p className="text-xs md:text-sm text-gray-500">
                   {summary?.wordCount || 0} words • 
                   {summary?.pageCount || '?'} pages
                 </p>
               </div>
-              <FiInfo className="w-5 h-5 text-gray-400" />
+              <FiInfo className="w-4 h-4 md:w-5 md:h-5 text-gray-400 flex-shrink-0 ml-2" />
             </div>
           </div>
         )}
 
         {/* Template Structure */}
         {summary && (
-          <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
+          <div className="bg-white rounded-2xl shadow-sm p-4 md:p-6 mb-4 md:mb-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">
               Template Structure
             </h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-              <div className="p-3 bg-gray-50 rounded-lg">
-                <p className="text-xs text-gray-500">Title Page</p>
-                <p className="font-medium text-sm">{summary.hasTitlePage ? '✅ Yes' : '❌ No'}</p>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3">
+              <div className="p-2 md:p-3 bg-gray-50 rounded-lg">
+                <p className="text-[10px] md:text-xs text-gray-500">Title Page</p>
+                <p className="font-medium text-xs md:text-sm">{summary.hasTitlePage ? '✅ Yes' : '❌ No'}</p>
               </div>
-              <div className="p-3 bg-gray-50 rounded-lg">
-                <p className="text-xs text-gray-500">Certificate</p>
-                <p className="font-medium text-sm">{summary.hasCertificate ? '✅ Yes' : '❌ No'}</p>
+              <div className="p-2 md:p-3 bg-gray-50 rounded-lg">
+                <p className="text-[10px] md:text-xs text-gray-500">Certificate</p>
+                <p className="font-medium text-xs md:text-sm">{summary.hasCertificate ? '✅ Yes' : '❌ No'}</p>
               </div>
-              <div className="p-3 bg-gray-50 rounded-lg">
-                <p className="text-xs text-gray-500">Declaration</p>
-                <p className="font-medium text-sm">{summary.hasDeclaration ? '✅ Yes' : '❌ No'}</p>
+              <div className="p-2 md:p-3 bg-gray-50 rounded-lg">
+                <p className="text-[10px] md:text-xs text-gray-500">Declaration</p>
+                <p className="font-medium text-xs md:text-sm">{summary.hasDeclaration ? '✅ Yes' : '❌ No'}</p>
               </div>
-              <div className="p-3 bg-gray-50 rounded-lg">
-                <p className="text-xs text-gray-500">Acknowledgement</p>
-                <p className="font-medium text-sm">{summary.hasAcknowledgement ? '✅ Yes' : '❌ No'}</p>
+              <div className="p-2 md:p-3 bg-gray-50 rounded-lg">
+                <p className="text-[10px] md:text-xs text-gray-500">Acknowledgement</p>
+                <p className="font-medium text-xs md:text-sm">{summary.hasAcknowledgement ? '✅ Yes' : '❌ No'}</p>
               </div>
-              <div className="p-3 bg-gray-50 rounded-lg">
-                <p className="text-xs text-gray-500">Signature</p>
-                <p className="font-medium text-sm">{summary.hasSignature ? '✅ Yes' : '❌ No'}</p>
+              <div className="p-2 md:p-3 bg-gray-50 rounded-lg">
+                <p className="text-[10px] md:text-xs text-gray-500">Signature</p>
+                <p className="font-medium text-xs md:text-sm">{summary.hasSignature ? '✅ Yes' : '❌ No'}</p>
               </div>
-              <div className="p-3 bg-gray-50 rounded-lg">
-                <p className="text-xs text-gray-500">Placeholders</p>
-                <p className="font-medium text-sm">{summary.hasPlaceholders ? `✅ ${summary.placeholderCount} found` : '❌ None'}</p>
+              <div className="p-2 md:p-3 bg-gray-50 rounded-lg">
+                <p className="text-[10px] md:text-xs text-gray-500">Placeholders</p>
+                <p className="font-medium text-xs md:text-sm">{summary.hasPlaceholders ? `✅ ${summary.placeholderCount} found` : '❌ None'}</p>
               </div>
             </div>
           </div>
@@ -520,21 +522,21 @@ export const Dashboard: React.FC = () => {
 
         {/* Detected Sections */}
         {summary && summary.sectionCount > 0 && (
-          <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
+          <div className="bg-white rounded-2xl shadow-sm p-4 md:p-6 mb-4 md:mb-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">
               Detected Sections
             </h2>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5 md:gap-2">
               {['Title', 'Abstract', 'Introduction', 'Objectives', 'Methodology', 'Conclusion', 'References', 'Certificate', 'Signature'].map((section) => (
                 <span 
                   key={section}
-                  className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm border border-blue-200"
+                  className="px-2 py-1 md:px-3 md:py-1 bg-blue-50 text-blue-700 rounded-full text-xs md:text-sm border border-blue-200"
                 >
                   {section}
                 </span>
               ))}
             </div>
-            <p className="text-sm text-gray-500 mt-3">
+            <p className="text-xs md:text-sm text-gray-500 mt-3">
               {summary.sectionCount} total sections detected
             </p>
           </div>
@@ -542,12 +544,12 @@ export const Dashboard: React.FC = () => {
 
         {/* Warnings */}
         {summary?.warnings && summary.warnings.length > 0 && (
-          <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-4 mb-6">
+          <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-3 md:p-4 mb-4 md:mb-6">
             <div className="flex items-start">
-              <FiAlertCircle className="w-5 h-5 text-yellow-600 mt-0.5 mr-3 flex-shrink-0" />
+              <FiAlertCircle className="w-4 h-4 md:w-5 md:h-5 text-yellow-600 mt-0.5 mr-2 md:mr-3 flex-shrink-0" />
               <div>
-                <p className="font-medium text-yellow-800">Parsing Warnings</p>
-                <ul className="text-sm text-yellow-700 mt-1 list-disc list-inside">
+                <p className="font-medium text-yellow-800 text-sm md:text-base">Parsing Warnings</p>
+                <ul className="text-xs md:text-sm text-yellow-700 mt-1 list-disc list-inside">
                   {summary.warnings.map((warning, index) => (
                     <li key={index}>{warning}</li>
                   ))}
@@ -557,18 +559,18 @@ export const Dashboard: React.FC = () => {
           </div>
         )}
 
-        {/* Next Steps - Updated Section */}
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 border border-blue-100">
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">
+        {/* Next Steps - Updated with better mobile responsiveness */}
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-4 md:p-8 border border-blue-100">
+          <h2 className="text-lg md:text-xl font-semibold text-gray-900 mb-2">
             🚀 Ready for AI Generation
           </h2>
-          <p className="text-gray-600 mb-6">
+          <p className="text-sm md:text-base text-gray-600 mb-4 md:mb-6">
             Your template has been parsed successfully. Next, we'll collect the information 
             needed to generate your document with AI.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+          <div className="flex flex-col sm:flex-row gap-3 md:gap-4 items-start sm:items-center">
             <button 
-              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl flex items-center"
+              className="w-full sm:w-auto px-4 md:px-6 py-2.5 md:py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center text-sm md:text-base"
               onClick={() => {
                 console.log('🔄 Navigate to Setup clicked');
                 navigate('/setup');
@@ -576,7 +578,7 @@ export const Dashboard: React.FC = () => {
             >
               Continue to Document Setup →
             </button>
-            <span className="text-sm text-gray-500">
+            <span className="text-xs md:text-sm text-gray-500">
               This will take you to the document setup page
             </span>
           </div>

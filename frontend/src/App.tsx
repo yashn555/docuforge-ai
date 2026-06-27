@@ -8,6 +8,7 @@ import { Generate } from './pages/Generate';
 import { Preview } from './pages/Preview';
 import { Header } from './components/Layout/Header';
 import { Footer } from './components/Layout/Footer';
+import { About } from './pages/About';
 
 function App() {
   console.log('🚀 App rendering...');
@@ -23,6 +24,7 @@ function App() {
             <Route path="/sections" element={<SectionSelection />} />
             <Route path="/generate" element={<Generate />} />
             <Route path="/preview" element={<Preview />} />
+            <Route path="/about" element={<About />} />
             <Route path="*" element={
               <div className="min-h-screen flex items-center justify-center bg-gray-50">
                 <div className="text-center">
