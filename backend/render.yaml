@@ -3,10 +3,24 @@ services:
     name: docuforge-backend
     runtime: node
     plan: free
-    buildCommand: npm install && npm run build
-    startCommand: npm run start
+    region: oregon
+    buildCommand: cd backend && npm install && npm run build
+    startCommand: cd backend && npm run start
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 5000
+      - key: AI_ENABLED
+        value: false
+      - key: USE_FALLBACK_ONLY
+        value: true
+      - key: SESSION_TTL
+        value: 3600
+      - key: MAX_FILE_SIZE
+        value: 10485760
+      - key: UPLOAD_DIR
+        value: ./uploads/temp
+      - key: CORS_ORIGIN
+        value: https://docuforge-frontend.vercel.app
+    healthCheckPath: /api/health
