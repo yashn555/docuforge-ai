@@ -4,6 +4,9 @@ import { join } from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import fs from 'fs';
 
+// Import Multer types
+import { FileFilterCallback } from 'multer';
+
 // Ensure upload directory exists
 const uploadDir = join(process.cwd(), 'uploads', 'temp');
 if (!fs.existsSync(uploadDir)) {
@@ -21,7 +24,8 @@ const storage = multer.diskStorage({
   }
 });
 
-const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+// Fix: Use multer's File type instead of Express.Multer.File
+const fileFilter = (req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
   const allowedTypes = [
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
   ];
