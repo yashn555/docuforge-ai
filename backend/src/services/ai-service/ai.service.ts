@@ -21,6 +21,7 @@ export interface AIGenerationRequest {
     templateStructure?: any;
     existingContent?: Record<string, any>;
     sectionToRegenerate?: string;
+    sessionId?: string;
     [key: string]: any;
   };
   sectionsToGenerate: string[];
@@ -38,11 +39,19 @@ export interface AIGenerationResult extends HybridGenerationResult {
   documentTitle: string;
   documentType: string;
   generatedAt: string;
+  processingTime: number;
   contextUsed?: {
     hasContext: boolean;
     hasExistingContent: boolean;
     isRegeneration: boolean;
   };
+}
+
+// Extend HybridGenerationOptions to include regenerateMode
+declare module './generators/hybrid-generator.js' {
+  interface HybridGenerationOptions {
+    regenerateMode?: boolean;
+  }
 }
 
 export class AIService {
@@ -90,8 +99,7 @@ export class AIService {
         useFallback: request.options?.useFallback !== false,
         temperature: request.options?.temperature,
         maxTokens: request.options?.maxTokens,
-        regenerateMode: request.options?.regenerateMode || false,
-        sectionSpecificPrompts: request.options?.sectionSpecificPrompts !== false
+        regenerateMode: request.options?.regenerateMode
       }
     );
 
@@ -131,7 +139,8 @@ export class AIService {
 
     // Build comprehensive context if not provided
     if (!enhanced.context) {
-      const contextParts = [];
+      // FIX: Add explicit type annotation for contextParts array
+      const contextParts: string[] = [];
       
       if (enhanced.title) {
         contextParts.push(`Document Title: ${enhanced.title}`);
@@ -267,7 +276,8 @@ export class AIService {
       }
     });
 
-    return result.sections[sectionType];
+    // Fixed: Use type assertion to avoid 'never' type
+    return (result as any).sections?.[sectionType] || null;
   }
 
   // Validate and enhance prompts

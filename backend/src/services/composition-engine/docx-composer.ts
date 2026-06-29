@@ -5,6 +5,12 @@ import { DOMParser, XMLSerializer } from 'xmldom';
 import { v4 as uuidv4 } from 'uuid';
 import chalk from 'chalk';
 
+// Type definitions for DOM elements - use DOM types
+type Element = globalThis.Element;
+type Node = globalThis.Node;
+type Document = globalThis.Document;
+type HTMLCollectionOf<T extends Element> = globalThis.HTMLCollectionOf<T>;
+
 export interface SectionContent {
   sectionType: string;
   content: string;
@@ -46,7 +52,7 @@ export class DocxComposer {
 
       // Parse and modify the XML
       const parser = new DOMParser();
-      const doc = parser.parseFromString(documentXml, 'text/xml');
+      const doc = parser.parseFromString(documentXml, 'text/xml') as Document;
 
       // Find all paragraphs
       const paragraphs = this.getElementsByTagNameNS(doc, 'p');
@@ -58,18 +64,18 @@ export class DocxComposer {
       if (sectionMap.size === 0) {
         console.log(chalk.yellow('⚠️ No section headings found, appending content to end'));
         // Append all sections at the end
-        const body = this.getElementsByTagNameNS(doc, 'body')[0];
-        if (body) {
+        const body = this.getElementsByTagNameNS(doc, 'body');
+        if (body.length > 0) {
           for (const [type, section] of Object.entries(sections)) {
             const headingPara = this.createHeadingParagraph(doc, type);
-            body.appendChild(headingPara);
+            body[0].appendChild(headingPara);
             
             const contentPara = this.createContentParagraph(doc, section.content, null);
-            body.appendChild(contentPara);
+            body[0].appendChild(contentPara);
             
             // Add spacing
             const spacing = doc.createElement('w:p');
-            body.appendChild(spacing);
+            body[0].appendChild(spacing);
             
             sectionsMapped++;
           }
@@ -221,9 +227,9 @@ export class DocxComposer {
       
       // Copy style from template if available
       if (templateParagraph) {
-        const pPr = this.getElementsByTagNameNS(templateParagraph, 'pPr')[0];
-        if (pPr) {
-          const newPPr = pPr.cloneNode(true) as Element;
+        const pPr = this.getElementsByTagNameNS(templateParagraph, 'pPr');
+        if (pPr.length > 0) {
+          const newPPr = pPr[0].cloneNode(true) as Element;
           p.appendChild(newPPr);
         }
       } else {
@@ -288,9 +294,9 @@ export class DocxComposer {
     
     // Copy style from template if available
     if (templateParagraph) {
-      const pPr = this.getElementsByTagNameNS(templateParagraph, 'pPr')[0];
-      if (pPr) {
-        const newPPr = pPr.cloneNode(true) as Element;
+      const pPr = this.getElementsByTagNameNS(templateParagraph, 'pPr');
+      if (pPr.length > 0) {
+        const newPPr = pPr[0].cloneNode(true) as Element;
         p.appendChild(newPPr);
       }
     } else {
@@ -314,16 +320,30 @@ export class DocxComposer {
     const result: Element[] = [];
     const prefixes = ['w', 'wpc', 'wp', 'wps', 'wpg', 'w14', 'w15', 'w16'];
     
+    // Try with namespace prefixes
     for (const prefix of prefixes) {
-      const elements = (element as any).getElementsByTagName(`${prefix}:${tagName}`);
-      for (let i = 0; i < elements.length; i++) {
-        result.push(elements[i] as Element);
+      try {
+        const elements = (element as any).getElementsByTagName(`${prefix}:${tagName}`);
+        if (elements && elements.length > 0) {
+          for (let i = 0; i < elements.length; i++) {
+            result.push(elements[i] as Element);
+          }
+        }
+      } catch (e) {
+        // Ignore errors for missing namespaces
       }
     }
     
-    const elements = (element as any).getElementsByTagName(tagName);
-    for (let i = 0; i < elements.length; i++) {
-      result.push(elements[i] as Element);
+    // Try without namespace
+    try {
+      const elements = (element as any).getElementsByTagName(tagName);
+      if (elements && elements.length > 0) {
+        for (let i = 0; i < elements.length; i++) {
+          result.push(elements[i] as Element);
+        }
+      }
+    } catch (e) {
+      // Ignore
     }
     
     return result;

@@ -2,6 +2,11 @@ import { AIModel } from './ai-model.interface.js';
 import { OllamaModel } from './ollama-model.js';
 import chalk from 'chalk';
 
+// Define response types
+interface OllamaTagsResponse {
+  models?: Array<{ name?: string; model?: string }>;
+}
+
 export class ModelFactory {
   private static instance: ModelFactory;
   private models: Map<string, AIModel> = new Map();
@@ -60,9 +65,9 @@ export class ModelFactory {
       });
       
       if (response.ok) {
-        const data = await response.json();
+        const data = await response.json() as OllamaTagsResponse;
         const models = data.models || [];
-        const modelNames = models.map((m: any) => m.name || m.model);
+        const modelNames = models.map((m: any) => m.name || m.model).filter(Boolean);
         
         // Find the smallest available model
         const preferred = ['tinyllama:latest', 'llama2:latest', 'llama3.2:3b', 'phi'];
@@ -101,8 +106,8 @@ export class ModelFactory {
         signal: AbortSignal.timeout(5000)
       });
       if (response.ok) {
-        const data = await response.json();
-        return data.models.map((m: any) => m.name || m.model);
+        const data = await response.json() as OllamaTagsResponse;
+        return data.models?.map((m: any) => m.name || m.model).filter(Boolean) || [];
       }
       return [];
     } catch (error) {

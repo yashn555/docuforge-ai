@@ -159,7 +159,7 @@ export class SectionAnalyzer {
     const types = new Set<SectionType>();
     
     for (const section of sections) {
-      if (section.type !== SectionType.UNKNOWN) {
+      if (section.type !== SectionType.UNKNOWN && section.type !== SectionType.HEADING) {
         types.add(section.type);
       }
     }
@@ -193,19 +193,17 @@ export class SectionAnalyzer {
     const stack: Section[] = [];
 
     for (const section of sections) {
-      let parent = null;
-      
       // Find appropriate parent
       while (stack.length > 0 && stack[stack.length - 1].level >= section.level) {
         stack.pop();
       }
       
       if (stack.length > 0) {
-        parent = stack[stack.length - 1];
-      }
-      
-      if (parent) {
-        parent.subSections.push(section);
+        const parent = stack[stack.length - 1];
+        // Check if parent has subSections array
+        if (parent && parent.subSections) {
+          parent.subSections.push(section);
+        }
       } else {
         result.push(section);
       }
@@ -221,8 +219,11 @@ export class SectionAnalyzer {
     
     const traverse = (section: Section) => {
       result.push(section);
-      for (const sub of section.subSections) {
-        traverse(sub);
+      // Check if section has subSections
+      if (section.subSections && Array.isArray(section.subSections)) {
+        for (const sub of section.subSections) {
+          traverse(sub);
+        }
       }
     };
     

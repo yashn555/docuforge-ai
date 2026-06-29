@@ -49,6 +49,7 @@ export class ComposeController {
         templatePath,
         sections,
         session.userInput || {}
+
       );
 
       // Store the composed file in session
@@ -58,7 +59,8 @@ export class ComposeController {
             path: result.outputPath,
             fileName: result.outputFileName,
             sectionsMapped: result.sectionsMapped,
-            totalSections: result.totalSections
+            totalSections: result.totalSections,
+            createdAt: Date.now()
           }
         });
         console.log(chalk.green(`[COMPOSE] Composition successful: ${result.outputFileName}`));
