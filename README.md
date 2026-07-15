@@ -1,6 +1,3 @@
-# DocuForge AI - Complete README for GitHub
-
----
 
 # 📄 DocuForge AI
 
